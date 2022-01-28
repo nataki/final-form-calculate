@@ -1,7 +1,7 @@
 import createDecorator from './'
 
 createDecorator(
-  {
+  {calculations: [{
     field: 'foo',
     updates: {
       bar: (value, allValues) => {
@@ -30,5 +30,5 @@ createDecorator(
     updates: (value, field, allValues) => {
       return { ...allValues }
     }
-  }
+  }]}
 )

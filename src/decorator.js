@@ -6,11 +6,23 @@ import isPromise from './isPromise'
 
 const tripleEquals = (a: any, b: any) => a === b
 const createDecorator = <FormValues: FormValuesShape>(
-  ...calculations: Calculation[]
+  { calculations, runOnInit = true, isPaused}:  {calculations: Calculation[], runOnInit?: boolean, isPaused?: () => boolean}
 ): Decorator<FormValues> => (form: FormApi<FormValues>) => {
   let previousValues = {}
+
   const unsubscribe = form.subscribe(
     ({ values }) => {
+      console.log('calculate');
+      if (!runOnInit && form.getState().pristine) {
+        if (!Object.keys(previousValues).length) {
+          console.log('pristine', previousValues, values);
+          previousValues = {...values};
+        }
+        return;
+      }
+      if (isPaused && isPaused()) {
+        return;
+      }
       form.batch(() => {
         const runUpdates = (
           field: string,

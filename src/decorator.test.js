@@ -11,12 +11,12 @@ describe('decorator', () => {
     form.subscribe(spy, { values: true })
     form.registerField('foo', foo, { value: true })
     form.registerField('bar', bar, { value: true })
-    const decorator = createDecorator({
+    const decorator = createDecorator({calculations: [{
       field: 'foo',
       updates: {
         bar: fooValue => `${fooValue}bar`
       }
-    })
+    }]})
     const unsubscribe = decorator(form)
     expect(typeof unsubscribe).toBe('function')
 
@@ -54,12 +54,12 @@ describe('decorator', () => {
     form.subscribe(spy, { values: true })
     form.registerField('foo', foo, { value: true })
     form.registerField('bar', bar, { value: true })
-    const decorator = createDecorator({
+    const decorator = createDecorator({calculations: [{
       field: /f?o/,
       updates: {
         bar: fooValue => `${fooValue}bar`
       }
-    })
+    }]})
     const unsubscribe = decorator(form)
     expect(typeof unsubscribe).toBe('function')
 
@@ -97,12 +97,12 @@ describe('decorator', () => {
     form.subscribe(spy, { values: true })
     form.registerField('foo', foo, { value: true })
     form.registerField('bar', bar, { value: true })
-    const decorator = createDecorator({
+    const decorator = createDecorator({calculations:[{
       field: ['cat', 'dog', 'rat', 'foo', 'hog'],
       updates: {
         bar: fooValue => `${fooValue}bar`
       }
-    })
+    }]})
     const unsubscribe = decorator(form)
     expect(typeof unsubscribe).toBe('function')
 
@@ -141,12 +141,12 @@ describe('decorator', () => {
     form.subscribe(spy, { values: true })
     form.registerField('foo', foo, { value: true })
     form.registerField('bar', bar, { value: true })
-    const decorator = createDecorator({
+    const decorator = createDecorator({calculations:[{
       field: 'foo',
       updates: {
         bar: fooValue => promise
       }
-    })
+    }]})
     const unsubscribe = decorator(form)
     expect(typeof unsubscribe).toBe('function')
 
@@ -230,12 +230,12 @@ describe('decorator', () => {
     form.subscribe(spy, { values: true })
     form.registerField('foo', foo, { value: true })
     form.registerField('bar', bar, { value: true })
-    const decorator = createDecorator({
+    const decorator = createDecorator({calculations:[{
       field: 'foo',
       updates: {
         bar: fooValue => `${fooValue}bar`
       }
-    })
+    }]})
     const unsubscribe = decorator(form)
     expect(typeof unsubscribe).toBe('function')
 
@@ -291,10 +291,10 @@ describe('decorator', () => {
     form.registerField('items[1]', () => {}, {})
     form.registerField('items[2]', () => {}, {})
     form.registerField('total', total, { value: true })
-    const decorator = createDecorator({
+    const decorator = createDecorator({calculations: [{
       field: /items\[\d+\]/,
       updates: { total: sum }
-    })
+    }]})
     decorator(form)
 
     expect(spy).toHaveBeenCalled()
@@ -350,7 +350,7 @@ describe('decorator', () => {
     form.registerField('list[0].items[1]', () => {}, {})
     form.registerField('list[0].items[2]', () => {}, {})
     form.registerField('list[0].total', total, { value: true })
-    const decorator = createDecorator({
+    const decorator = createDecorator({calculations: [{
       field: /\.items\[\d+\]/,
       updates: (value, name, all) => {
         const totalField = name.replace(/items\[[0-9]+\]/, 'total')
@@ -358,7 +358,7 @@ describe('decorator', () => {
           [totalField]: sum(value, all)
         }
       }
-    })
+    }]})
     decorator(form)
 
     expect(spy).toHaveBeenCalled()
@@ -426,7 +426,7 @@ describe('decorator', () => {
     form.subscribe(spy, { values: true })
     form.registerField('minimum', minimum, { value: true })
     form.registerField('maximum', maximum, { value: true })
-    const decorator = createDecorator(
+    const decorator = createDecorator({calculations: [
       {
         field: 'minimum', // when minimum changes...
         updates: {
@@ -440,7 +440,7 @@ describe('decorator', () => {
           // update minimum to the result of this function
           minimum: calcMin
         }
-      }
+      }]}
     )
     decorator(form)
 
@@ -497,7 +497,7 @@ describe('decorator', () => {
     form.subscribe(spy, { values: true })
     form.registerField('foo', foo, { value: true })
     form.registerField('bar', bar, { value: true })
-    const decorator = createDecorator({
+    const decorator = createDecorator({calculations: [{
       field: 'foo',
       isEqual: (a, b) =>
         (a === undefined ? undefined : a.id) ===
@@ -505,7 +505,7 @@ describe('decorator', () => {
       updates: {
         bar: fooValue => ({ id: fooValue.id + 1, name: `${fooValue.name}bar` })
       }
-    })
+    }]})
     const unsubscribe = decorator(form)
     expect(typeof unsubscribe).toBe('function')
 
@@ -580,12 +580,12 @@ describe('decorator', () => {
     form.registerField('foo', foo, { value: true })
     form.registerField('bar', bar, { value: true })
     form.initialize({ foo: 'foo' })
-    const decorator = createDecorator({
+    const decorator = createDecorator({calculations: [{
       field: 'foo',
       updates: {
         bar: (_, __, prevValues) => prevValues.foo
       }
-    })
+    }]})
     const unsubscribe = decorator(form)
     expect(typeof unsubscribe).toBe('function')
 
@@ -626,12 +626,12 @@ describe('decorator', () => {
     form.registerField('foo', foo, { value: true })
     form.registerField('bar', bar, { value: true })
 
-    const decorator = createDecorator({
+    const decorator = createDecorator({calculations: [{
       field: 'foo',
       updates: {
         bar: (_, __, prevValues) => prevValues.foo
       }
-    })
+    }]})
     const unsubscribe = decorator(form)
     expect(typeof unsubscribe).toBe('function')
 
@@ -684,7 +684,7 @@ describe('decorator', () => {
     form.registerField('list[0].items[2]', () => {}, {})
     form.registerField('list[0].total', total, { value: true })
 
-    const decorator = createDecorator({
+    const decorator = createDecorator({calculations: [{
       field: /\.items\[\d+\]/,
       updates: (value, name, all, prevAll) => {
         const totalField = name.replace(/items\[[0-9]+\]/, 'total')
@@ -692,7 +692,7 @@ describe('decorator', () => {
           [totalField]: sum(value, prevAll)
         }
       }
-    })
+    }]})
     decorator(form)
 
     expect(spy).toHaveBeenCalled()
